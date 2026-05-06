@@ -1,0 +1,53 @@
+services:
+  # ===========================================
+  # MySQL 数据库服务配置
+  # ===========================================
+  mysql:
+    # === image - 指定使用的 Docker 镜像 ===
+    # mysql:8.0 表示使用 MySQL 官方镜像的 8.0 版本
+    # 使用本地镜像（已通过国内源拉取）
+    image: mysql:8.0
+    
+    # === container_name - 容器名称 ===
+    # 给容器起一个易识别的名字，执行 docker ps 时更容易查看
+    container_name: mysql-tutorial
+    
+    # === environment - 环境变量配置 ===
+    environment:
+      # MYSQL_ROOT_PASSWORD - 设置 MySQL root 用户的密码
+      # ⚠️ 注意：生产环境请使用更安全的密码！
+      MYSQL_ROOT_PASSWORD: root123456
+      
+      # MYSQL_ROOT_HOST - 允许 root 用户从任何主机连接
+      # 默认情况下 root 只能从 localhost 连接，这个设置让它可以远程连接
+      MYSQL_ROOT_HOST: '%'
+    
+    # === ports - 端口映射 ===
+    ports:
+      # 格式："主机端口：容器端口"
+      # 将容器的 3306 端口映射到主机的 3306 端口
+      - "3306:3306"
+    
+    # === volumes - 数据卷挂载 ===
+    volumes:
+      # 将容器的 /var/lib/mysql 目录挂载到 Docker 卷中
+      # 数据持久化：容器删除重启后，数据不会丢失
+      - mysql-data:/var/lib/mysql
+      
+      # 挂载初始化脚本目录，MySQL 启动时自动执行 .sql 文件
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+    
+    # === restart - 重启策略 ===
+    restart: unless-stopped
+    
+    # === healthcheck - 健康检查 ===
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# === volumes - 定义命名卷 ===
+volumes:
+  mysql-data:
+    driver: local

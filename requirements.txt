@@ -1,0 +1,7 @@
+# MySQL Python Tutorial Dependencies
+# ========================
+
+# PyMySQL - 纯 Python 实现的 MySQL 客户端库
+# 优点：无需安装 MySQL C 客户端，跨平台兼容性好
+# 官网：https://pymysql.readthedocs.io/
+pymysql>=1.1.0
